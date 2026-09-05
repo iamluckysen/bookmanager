@@ -3,6 +3,7 @@ package com.project.bookmanager.controller;
 
 import com.project.bookmanager.entity.Book;
 import com.project.bookmanager.service.BookService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,9 +20,14 @@ public class BookController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Book>> getBooks()
+    public ResponseEntity<Page<Book>> getBooks(
+            @RequestParam(value = "pageNo", defaultValue = "0", required = false)  int pageNo,
+            @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize,
+            @RequestParam(value = "sortBy", defaultValue = "id", required = false) String sortBy,
+            @RequestParam(value = "sortOrder", defaultValue = "asc", required = false) String sortOrder
+    )
     {
-        return new ResponseEntity<>(bookService.getAllBooks(), HttpStatus.OK);
+        return ResponseEntity.ok(bookService.getAllBooks(pageNo,pageSize,sortBy,sortOrder));
     }
 
     @PostMapping

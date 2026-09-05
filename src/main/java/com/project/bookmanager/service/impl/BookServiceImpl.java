@@ -4,6 +4,10 @@ import com.project.bookmanager.entity.Book;
 import com.project.bookmanager.exceptions.ResourceNotFoundException;
 import com.project.bookmanager.repo.BookRepository;
 import com.project.bookmanager.service.BookService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,8 +21,14 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<Book> getAllBooks() {
-        return bookRepository.findAll();
+    public Page<Book> getAllBooks(int  page, int pageSize, String sortBy, String sortOrder)
+    {       Sort sort = sortOrder.equalsIgnoreCase(Sort.Direction.ASC.name())
+            ?Sort.by(sortBy).ascending()
+            :Sort.by(sortBy).descending();
+
+        Pageable pageable = PageRequest.of(page,pageSize,sort);
+
+        return bookRepository.findAll(pageable);
     }
 
     @Override
