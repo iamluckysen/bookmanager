@@ -1,6 +1,9 @@
 package com.project.bookmanager.service.impl;
 
+import com.project.bookmanager.dto.BookAddDto;
+import com.project.bookmanager.dto.BookUpdateDto;
 import com.project.bookmanager.entity.Book;
+import com.project.bookmanager.exceptions.BookAlreadyExistsException;
 import com.project.bookmanager.exceptions.ResourceNotFoundException;
 import com.project.bookmanager.repo.BookRepository;
 import com.project.bookmanager.service.BookService;
@@ -37,23 +40,48 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public Book saveBook(Book book) {
-        return bookRepository.save(book);
+    public Book saveBook(BookAddDto bookDto) {
+        if(!bookRepository.existsByisbn(bookDto.getIsbn())){
+            Book book = new Book();
+            book.setTitle(bookDto.getTitle());
+            book.setAuthor(bookDto.getAuthor());
+            book.setPrice(bookDto.getPrice());
+            book.setCategory(bookDto.getCategory());
+            book.setIsbn(bookDto.getIsbn());
+            book.setDescription(bookDto.getDescription());
+            book.setCoverImageURL(bookDto.getCoverImageURL());
+            book.setStockQuantity(bookDto.getStockQuantity());
+            return  bookRepository.save(book);
+        }
+        else throw new BookAlreadyExistsException("Book Already Exists with the isbn: " + bookDto.getIsbn());
     }
 
     @Override
-    public Book updateBook(Long id, Book bookDetails) {
+    public Book updateBook(Long id, BookUpdateDto bookDetails) {
         Book existingBook = bookRepository.findById(id)
                 .orElseThrow(()-> new ResourceNotFoundException("Book Not Found with id: " + id));
 
-        existingBook.setTitle(bookDetails.getTitle());
-        existingBook.setAuthor(bookDetails.getAuthor());
-        existingBook.setPrice(bookDetails.getPrice());
-        existingBook.setIsbn(bookDetails.getIsbn());
-        existingBook.setCategory(bookDetails.getCategory());
-        existingBook.setCoverImageURL(bookDetails.getCoverImageURL());
-        existingBook.setStockQuantity(bookDetails.getStockQuantity());
-        existingBook.setDescription(bookDetails.getDescription());
+        if (bookDetails.getTitle() != null) {
+            existingBook.setTitle(bookDetails.getTitle());
+        }
+        if (bookDetails.getAuthor() != null) {
+            existingBook.setAuthor(bookDetails.getAuthor());
+        }
+        if (bookDetails.getPrice() != null) {
+            existingBook.setPrice(bookDetails.getPrice());
+        }
+        if (bookDetails.getStockQuantity() != null) {
+            existingBook.setStockQuantity(bookDetails.getStockQuantity());
+        }
+        if (bookDetails.getDescription() != null) {
+            existingBook.setDescription(bookDetails.getDescription());
+        }
+        if (bookDetails.getCategory() != null) {
+            existingBook.setCategory(bookDetails.getCategory());
+        }
+        if (bookDetails.getCoverImageURL() != null) {
+            existingBook.setCoverImageURL(bookDetails.getCoverImageURL());
+        }
         return bookRepository.save(existingBook);
     }
 

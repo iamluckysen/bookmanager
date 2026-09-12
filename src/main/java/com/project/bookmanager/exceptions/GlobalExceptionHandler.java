@@ -80,4 +80,14 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(errorDetails, HttpStatus.UNAUTHORIZED);
     }
+    @ExceptionHandler(BookAlreadyExistsException.class)
+    public ResponseEntity<ErrorDetails> handleBookAlreadyExistsException(BookAlreadyExistsException exception, WebRequest request){
+        ErrorDetails errorDetails = new ErrorDetails(
+                LocalDateTime.now(),
+                exception.getMessage(),
+                request.getDescription(false),
+                "BOOK_ALREADY_EXISTS"
+        );
+        return new ResponseEntity<>(errorDetails, HttpStatus.CONFLICT);
+    }
 }

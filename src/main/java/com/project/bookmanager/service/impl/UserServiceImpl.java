@@ -1,6 +1,7 @@
 package com.project.bookmanager.service.impl;
 
 import com.project.bookmanager.dto.UserLoginDto;
+import com.project.bookmanager.dto.UserRegistrationDto;
 import com.project.bookmanager.entity.User;
 import com.project.bookmanager.exceptions.UserAlreadyExistsException;
 import com.project.bookmanager.repo.UserRepository;
@@ -24,7 +25,12 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public User registerUser(User user) {
+    public User registerUser(UserRegistrationDto userRegistrationDto) {
+        User user = new User();
+        user.setName(userRegistrationDto.getName());
+        user.setEmail(userRegistrationDto.getEmail());
+        user.setPassword(userRegistrationDto.getPassword());
+
        if(!userRepository.existsByEmail(user.getEmail())){
            String hashedPassword = passwordEncoder.encode(user.getPassword());
            user.setPassword(hashedPassword);

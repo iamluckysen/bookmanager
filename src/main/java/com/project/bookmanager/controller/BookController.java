@@ -1,8 +1,11 @@
 package com.project.bookmanager.controller;
 
 
+import com.project.bookmanager.dto.BookAddDto;
+import com.project.bookmanager.dto.BookUpdateDto;
 import com.project.bookmanager.entity.Book;
 import com.project.bookmanager.service.BookService;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +34,7 @@ public class BookController {
     }
 
     @PostMapping
-    public ResponseEntity<Book> addBook(@RequestBody Book book)
+    public ResponseEntity<Book> addBook(@Valid @RequestBody BookAddDto book)
     {
         return new ResponseEntity<>(bookService.saveBook(book), HttpStatus.CREATED);
     }
@@ -42,8 +45,8 @@ public class BookController {
         return new ResponseEntity<>(bookService.getBookById(id), HttpStatus.OK);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Book> updateBook(@PathVariable Long id, @RequestBody Book bookDetails){
+    @PatchMapping("/{id}")
+    public ResponseEntity<Book> updateBook( @Valid @PathVariable Long id, @RequestBody BookUpdateDto bookDetails){
         Book updatedBook = bookService.updateBook(id, bookDetails);
         return new ResponseEntity<>(updatedBook, HttpStatus.OK);
     }

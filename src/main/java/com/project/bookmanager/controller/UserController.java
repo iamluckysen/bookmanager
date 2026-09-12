@@ -21,11 +21,8 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<User> registerUser(@Valid @RequestBody UserRegistrationDto userRegistrationDto) {
-        User user = new User();
-        user.setName(userRegistrationDto.getName());
-        user.setEmail(userRegistrationDto.getEmail());
-        user.setPassword(userRegistrationDto.getPassword());
-        return new ResponseEntity<>(userService.registerUser(user), HttpStatus.CREATED);
+
+        return new ResponseEntity<>(userService.registerUser(userRegistrationDto), HttpStatus.CREATED);
     }
     @PostMapping("/login")
     public ResponseEntity<JwtAuthResponse> loginUser(@Valid @RequestBody UserLoginDto userLoginDto) {
