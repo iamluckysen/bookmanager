@@ -3,6 +3,7 @@ package com.project.bookmanager.service.impl;
 import com.project.bookmanager.entity.Book;
 import com.project.bookmanager.entity.BorrowRecord;
 import com.project.bookmanager.entity.User;
+import com.project.bookmanager.exceptions.InvalidCheckOutException;
 import com.project.bookmanager.exceptions.ResourceNotFoundException;
 import com.project.bookmanager.repo.BookRepository;
 import com.project.bookmanager.repo.BorrowRecordRepository;
@@ -32,6 +33,13 @@ public class BorrowRecordServiceImpl implements BorrowRecordService {
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(()-> new ResourceNotFoundException("User not found"));
 
+        boolean alreadyBorrowed = borrowRecordRepository.findByUserIdAndBookIdAndStatus(user.getId(),book.getId(),"BORROWED")
+                .isPresent();
+
+        if(alreadyBorrowed){
+            throw new InvalidCheckOutException("you have already borrowed this book and not returned yet");
+        }
+
         if(book.getStockQuantity()<=0){
             throw new RuntimeException("book is out of stock");
         }
@@ -48,4 +56,26 @@ public class BorrowRecordServiceImpl implements BorrowRecordService {
 
         return borrowRecordRepository.save(borrowRecord);
     }
+
+    @Transactional
+    public BorrowRecord returnBook(Long bookId, String userEmail) {
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(()-> new ResourceNotFoundException("Book not found"));
+
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(()-> new ResourceNotFoundException("User not found"));
+
+        BorrowRecord activeRecord=  borrowRecordRepository.findByUserIdAndBookIdAndStatus(user.getId(),book.getId(),"BORROWED")
+                .orElseThrow(()-> new InvalidCheckOutException("you do not have active checkout for this book"));
+
+        activeRecord.setReturnDate(LocalDate.now());
+        activeRecord.setStatus("RETURNED");
+        book.setStockQuantity(book.getStockQuantity()+1);
+        bookRepository.save(book);
+
+        return borrowRecordRepository.save(activeRecord);
+
+    }
+
+
 }

@@ -8,4 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 public interface BorrowRecordService {
     @Transactional
     public BorrowRecord borrowBook(Long bookId, String userEmail);
+
+    @Transactional
+    public BorrowRecord returnBook(Long bookId, String userEmail);
+
 }

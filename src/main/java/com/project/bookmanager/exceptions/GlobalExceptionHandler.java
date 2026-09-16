@@ -90,4 +90,12 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(errorDetails, HttpStatus.CONFLICT);
     }
+
+    @ExceptionHandler(InvalidCheckOutException.class)
+    public ResponseEntity<Map<String,String>> handleInvalidCheckout(InvalidCheckOutException ex){
+        Map<String,String> errorsResponse = new HashMap<>();
+        errorsResponse.put("message", ex.getMessage());
+        errorsResponse.put("error","BAD_REQUEST");
+        return new ResponseEntity<>(errorsResponse, HttpStatus.BAD_REQUEST);
+    }
 }

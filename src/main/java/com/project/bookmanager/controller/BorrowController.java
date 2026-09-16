@@ -26,4 +26,11 @@ public class BorrowController {
         borrowRecordService.borrowBook(bookId, userEmail);
         return ResponseEntity.ok().body("book added to your account");
     }
+
+    @PostMapping("/{bookId}/return")
+    public ResponseEntity<String> returnBook(@PathVariable Long bookId, Principal principal) {
+        String userEmail = principal.getName();
+        borrowRecordService.returnBook(bookId, userEmail);
+        return ResponseEntity.ok().body("book returned to your account");
+    }
 }
